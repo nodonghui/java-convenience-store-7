@@ -1,22 +1,23 @@
 package store.input;
 
-import camp.nextstep.edu.missionutils.Console;
 import store.product.BuyItem;
 import store.product.Item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import camp.nextstep.edu.missionutils.Console;
 
 public class PurchaseInput implements  Input{
 
     private final String inputValue;
-    private final List<BuyItem> BuyItems;
-    private List<Item> ConvenienceItems;
+    private final HashMap<String, BuyItem> buyItems;
+    private HashMap<String, Item> convenienceItems;
 
-    PurchaseInput(List<Item> ConvenienceItems) {
-        this.BuyItems=new ArrayList<>();
+    PurchaseInput(HashMap<String, Item> ConvenienceItems) {
+        this.buyItems=new HashMap<>();
         this.inputValue=getUserInput();
-        this.ConvenienceItems=ConvenienceItems;
+        this.convenienceItems=ConvenienceItems;
 
         addBuyItem(inputValue);
 
@@ -27,7 +28,7 @@ public class PurchaseInput implements  Input{
         try {
             for (String entry : productEntries) {
                 BuyItem buyItem=convertEntry(entry);
-                BuyItems.add(buyItem);
+                buyItems.put(buyItem.getName(),buyItem);
             }
         } catch (NumberFormatException e) {
             System.err.println("[ERROR] 정수 변환에 실패했습니다.");
@@ -79,22 +80,12 @@ public class PurchaseInput implements  Input{
 
     void validationContainBuyitemName(String input) {
         boolean flag=false;
-        for(Item item:ConvenienceItems) {
-            String name=item.getName();
-            flag=checkItemName(input,name);
-        }
-        if(flag==false) {
+        if(!convenienceItems.containsKey(input)) {
             throw  new IllegalArgumentException("[ERROR] 편의점에 해당 상품이 존재하지 않습니다.");
         }
+
     }
 ////////////////////////////////////////////////////////////////////////////////////////
-    boolean checkItemName(String input,String name) {
-        if(name.equals(input)) {
-            return true;
-        }
-        return false;
-    }
-
 
 
     @Override
